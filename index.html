@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Seemoji! 🤙</title>
+	</head>
+
+	<body>
+		<div id="camera-wrapper" style="position: relative">
+			<video autoplay="true" style="position: absolute; transform: scaleX(-1)"></video>
+			<canvas style="opacity: 0.5; position: absolute; transform: scaleX(-1)"></canvas>
+		</div>
+
+		<!-- Require the TensorFlow peer dependencies of handpose. -->
+		<script src="https://unpkg.com/@tensorflow/tfjs-core"></script>
+		<script src="https://unpkg.com/@tensorflow/tfjs-converter"></script>
+		<script src="https://unpkg.com/@tensorflow/tfjs-backend-cpu"></script>
+		<script src="https://unpkg.com/@tensorflow/tfjs-backend-webgl"></script>
+
+		<!-- Require handpose itself. -->
+		<script src="https://unpkg.com/@tensorflow-models/handpose"></script>
+
+		<!--  -->
+		<script src="./dist/index.js" type="module"></script>
+	</body>
+</html>
