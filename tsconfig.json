@@ -1,0 +1,11 @@
+{
+	"compilerOptions": {
+		"forceConsistentCasingInFileNames": true,
+		"lib": ["ESNext", "DOM"],
+		"outDir": "./public/dist",
+		"module": "ESNext",
+		"strict": true,
+		"target": "ESNext"
+	},
+	"include": ["src/*.d.ts", "src/index.ts"]
+}
