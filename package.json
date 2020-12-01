@@ -8,6 +8,8 @@
 	"name": "seemoji",
 	"repository": "https://github.com/robertbullen/seemoji.git",
 	"scripts": {
+		"build": "tsc",
+		"deploy": "gh-pages-clean && gh-pages -d public",
 		"start": "concurrently npm:watch-ts npm:watch-public",
 		"watch-public": "live-server public",
 		"watch-ts": "tsc --watch"

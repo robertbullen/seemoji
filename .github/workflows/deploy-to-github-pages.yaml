@@ -1,0 +1,42 @@
+name: Deploy to GitHub Pages
+
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        strategy:
+            matrix:
+                node-version: [12.x]
+
+        steps:
+            - name: Checkout the master branch
+              uses: actions/checkout@v2
+
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v1
+              with:
+                  node-version: ${{ matrix.node-version }}
+
+            - name: Restore cached dependencies
+              uses: actions/cache@v2
+              with:
+                  path: '**/node_modules'
+                  key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
+            - name: Install new dependencies
+              run: yarn --frozen-lockfile
+
+            - name: Build the website
+              run: yarn build
+
+            - name: Deploy to the gh-pages branch
+              run: |
+                  git config --global user.email 'GitHub Actions'
+                  git config --global user.name 'github-actions@github.com'
+                  git remote set-url origin 'https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git'
+                  yarn deploy
