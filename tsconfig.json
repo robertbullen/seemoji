@@ -1,11 +1,16 @@
 {
 	"compilerOptions": {
+		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
 		"lib": ["ESNext", "DOM"],
-		"outDir": "./public/dist",
-		"module": "ESNext",
+		"module": "CommonJS",
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitReturns": true,
+		"noUncheckedIndexedAccess": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
 		"strict": true,
 		"target": "ESNext"
 	},
-	"include": ["src/*.d.ts", "src/index.ts"]
+	"include": ["./lib/**/*.d.ts", "./lib/**/*.ts"]
 }

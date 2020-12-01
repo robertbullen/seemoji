@@ -1,3 +1,5 @@
+import * as handpose from '@tensorflow-models/handpose';
+
 export function drawPath(
 	context: CanvasRenderingContext2D,
 	points: [x: number, y: number, ...rest: number[]][],
