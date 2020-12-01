@@ -1,8 +1,9 @@
 import { drawHandPredictions } from './drawing.js';
 
-const cameraWrapperId = '#camera-wrapper';
-const videoSelector = `${cameraWrapperId} video`;
-const canvasSelector = `${cameraWrapperId} canvas`;
+const previewSelector = '#preview';
+const loadingSelector = `${previewSelector} p`;
+const canvasSelector = `${previewSelector} canvas`;
+const videoSelector = `${previewSelector} video`;
 
 function selectElementOrThrow<TElement extends Element>(selector: string): TElement {
 	const element: TElement | null = document.querySelector<TElement>(selector);
@@ -33,9 +34,8 @@ async function streamCameraToVideoElement(
 async function drawHandPredictionsToCanvasElement(
 	video: HTMLVideoElement,
 	canvas: HTMLCanvasElement,
+	model: handpose.HandPose,
 ): Promise<void> {
-	const model = await handpose.load();
-
 	const contextOrNull: CanvasRenderingContext2D | null = canvas.getContext('2d');
 	if (!contextOrNull) {
 		throw new Error('`canvas.getContext()` returned `null`');
@@ -55,13 +55,21 @@ async function drawHandPredictionsToCanvasElement(
 
 window.addEventListener('load', async () => {
 	try {
-		const video: HTMLVideoElement = selectElementOrThrow(videoSelector);
-		const [width, height] = await streamCameraToVideoElement(video);
+		const model: handpose.HandPose = await handpose.load();
 
+		const loading: HTMLParagraphElement = selectElementOrThrow(loadingSelector);
+		const video: HTMLVideoElement = selectElementOrThrow(videoSelector);
 		const canvas: HTMLCanvasElement = selectElementOrThrow(canvasSelector);
+
+		loading.style.display = 'none';
+		video.style.display = 'unset';
+		canvas.style.display = 'unset';
+
+		const [width, height] = await streamCameraToVideoElement(video);
 		canvas.width = width;
 		canvas.height = height;
-		drawHandPredictionsToCanvasElement(video, canvas);
+
+		drawHandPredictionsToCanvasElement(video, canvas, model);
 	} catch (error) {
 		console.error(error);
 	}

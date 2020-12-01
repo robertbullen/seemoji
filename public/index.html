@@ -6,9 +6,17 @@
 	</head>
 
 	<body>
-		<div id="camera-wrapper" style="position: relative">
-			<video autoplay="true" style="position: absolute; transform: scaleX(-1)"></video>
-			<canvas style="opacity: 0.5; position: absolute; transform: scaleX(-1)"></canvas>
+		<div id="preview" style="position: relative">
+			<p>Loading...</p>
+
+			<video
+				autoplay="true"
+				style="display: none; position: absolute; transform: scaleX(-1)"
+			></video>
+
+			<canvas
+				style="display: none; opacity: 0.5; position: absolute; transform: scaleX(-1)"
+			></canvas>
 		</div>
 
 		<!-- Require the TensorFlow peer dependencies of handpose. -->
