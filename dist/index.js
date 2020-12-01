@@ -1,7 +1,8 @@
 import { drawHandPredictions } from './drawing.js';
-const cameraWrapperId = '#camera-wrapper';
-const videoSelector = `${cameraWrapperId} video`;
-const canvasSelector = `${cameraWrapperId} canvas`;
+const previewSelector = '#preview';
+const loadingSelector = `${previewSelector} p`;
+const canvasSelector = `${previewSelector} canvas`;
+const videoSelector = `${previewSelector} video`;
 function selectElementOrThrow(selector) {
     const element = document.querySelector(selector);
     if (!element) {
@@ -23,8 +24,7 @@ async function streamCameraToVideoElement(video) {
         video.onloadedmetadata = () => resolve([video.clientWidth, video.clientHeight]);
     });
 }
-async function drawHandPredictionsToCanvasElement(video, canvas) {
-    const model = await handpose.load();
+async function drawHandPredictionsToCanvasElement(video, canvas, model) {
     const contextOrNull = canvas.getContext('2d');
     if (!contextOrNull) {
         throw new Error('`canvas.getContext()` returned `null`');
@@ -40,12 +40,17 @@ async function drawHandPredictionsToCanvasElement(video, canvas) {
 }
 window.addEventListener('load', async () => {
     try {
+        const model = await handpose.load();
+        const loading = selectElementOrThrow(loadingSelector);
         const video = selectElementOrThrow(videoSelector);
-        const [width, height] = await streamCameraToVideoElement(video);
         const canvas = selectElementOrThrow(canvasSelector);
+        loading.style.display = 'none';
+        video.style.display = 'unset';
+        canvas.style.display = 'unset';
+        const [width, height] = await streamCameraToVideoElement(video);
         canvas.width = width;
         canvas.height = height;
-        drawHandPredictionsToCanvasElement(video, canvas);
+        drawHandPredictionsToCanvasElement(video, canvas, model);
     }
     catch (error) {
         console.error(error);
