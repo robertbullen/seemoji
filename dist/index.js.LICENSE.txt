@@ -1,3 +1,10 @@
+/*!
+ * Chart.js v2.9.4
+ * https://www.chartjs.org
+ * (c) 2020 Chart.js Contributors
+ * Released under the MIT License
+ */
+
 /**
     * @license
     * Copyright 2020 Google LLC. All Rights Reserved.
@@ -118,3 +125,7 @@
  */
 
 /** @license See the LICENSE file. */
+
+//! moment.js
+
+//! moment.js locale configuration
