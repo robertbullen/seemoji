@@ -1,8 +1,18 @@
 declare module '@tensorflow-models/handpose' {
+	import { PixelData } from '@tensorflow/tfjs-core';
+
 	function load(): Promise<HandPose>;
 
+	type ImageSource =
+		| HTMLCanvasElement
+		| HTMLImageElement
+		| HTMLVideoElement
+		| ImageData
+		| OffscreenCanvas
+		| PixelData;
+
 	class HandPose {
-		public estimateHands(video: HTMLVideoElement): Promise<Prediction[]>;
+		public estimateHands(source: ImageSource): Promise<Prediction[]>;
 	}
 
 	type Point2d = [x: number, y: number];

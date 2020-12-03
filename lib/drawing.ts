@@ -1,4 +1,4 @@
-import * as handpose from '@tensorflow-models/handpose';
+import { FingerName, FingerPoints, Prediction } from '@tensorflow-models/handpose';
 
 export function drawPath(
 	context: CanvasRenderingContext2D,
@@ -28,9 +28,10 @@ export function drawPoint(
 	context.fill();
 }
 
-export function drawHandPredictions(
+export function drawHandPrediction(
 	context: CanvasRenderingContext2D,
-	predictions: handpose.Prediction[],
+	prediction: Prediction,
+	includeBoundingBox: boolean,
 ): void {
 	const color = 'red';
 	const fontSize = 24;
@@ -42,8 +43,8 @@ export function drawHandPredictions(
 	context.lineWidth = 6;
 	context.strokeStyle = color;
 
-	for (const prediction of predictions) {
-		// Draw the bounding box.
+	// Draw the bounding box.
+	if (includeBoundingBox) {
 		const [x1, y1] = prediction.boundingBox.topLeft;
 		const [x2, y2] = prediction.boundingBox.bottomRight;
 
@@ -53,23 +54,23 @@ export function drawHandPredictions(
 			x1,
 			y1 + fontSize,
 		);
-
-		// Draw the fingers.
-		const fingerNames: handpose.FingerName[] = [
-			'thumb',
-			'indexFinger',
-			'middleFinger',
-			'ringFinger',
-			'pinky',
-		];
-		for (const fingerName of fingerNames) {
-			const points: handpose.FingerPoints = prediction.annotations[fingerName];
-			drawPath(context, [...prediction.annotations.palmBase, ...points]);
-			for (const [x, y] of points) {
-				drawPoint(context, x, y, pointRadius);
-			}
-		}
-		const [x, y] = prediction.annotations.palmBase[0];
-		drawPoint(context, x, y, pointRadius);
 	}
+
+	// Draw the fingers.
+	const fingerNames: FingerName[] = [
+		'thumb',
+		'indexFinger',
+		'middleFinger',
+		'ringFinger',
+		'pinky',
+	];
+	for (const fingerName of fingerNames) {
+		const points: FingerPoints = prediction.annotations[fingerName];
+		drawPath(context, [...prediction.annotations.palmBase, ...points]);
+		for (const [x, y] of points) {
+			drawPoint(context, x, y, pointRadius);
+		}
+	}
+	const [x, y] = prediction.annotations.palmBase[0];
+	drawPoint(context, x, y, pointRadius);
 }

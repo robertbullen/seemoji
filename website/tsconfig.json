@@ -6,5 +6,5 @@
 		"sourceMap": true
 	},
 	"extends": "../tsconfig.json",
-	"include": ["../lib/*.d.ts", "./src/index.ts"]
+	"include": ["../lib/**/*.d.ts", "./src/index.ts"]
 }

@@ -1,74 +1,39 @@
-import { drawHandPredictions } from '@lib/drawing';
-import * as handpose from '@tensorflow-models/handpose';
-import '@tensorflow/tfjs-backend-cpu';
-import '@tensorflow/tfjs-backend-webgl';
+import { HandPose, load as loadHandpose } from '@tensorflow-models/handpose';
+import { ready as tensorFlowReady } from '@tensorflow/tfjs-core';
+import { LoadingComponent } from './components/loading';
+import { PreviewComponent } from './components/preview';
+import './tensorflow-backends';
 
-function selectElementOrThrow<TElement extends Element>(selector: string): TElement {
-	const element: TElement | null = document.querySelector<TElement>(selector);
-	if (!element) {
-		throw new Error(`Element not found using selector '${selector}'`);
-	}
-	return element;
-}
+window.addEventListener(
+	'load',
+	async (): Promise<void> => {
+		try {
+			// Indicate loading immediately.
+			const loadingComponent = new LoadingComponent();
+			loadingComponent.loading();
 
-async function streamCameraToVideoElement(
-	video: HTMLVideoElement,
-): Promise<[width: number, height: number]> {
-	// Open the camera stream.
-	const stream: MediaStream = await navigator.mediaDevices.getUserMedia({
-		audio: false,
-		video: {
-			facingMode: 'user',
-		},
-	});
+			try {
+				// Start loading handpose in the background because it takes a while.
+				await tensorFlowReady();
+				const handposePromise: Promise<HandPose> = loadHandpose();
 
-	// Assign the stream to the video element and resolve once its loaded.
-	video.srcObject = stream;
-	return new Promise((resolve) => {
-		video.onloadedmetadata = () => resolve([video.clientWidth, video.clientHeight]);
-	});
-}
+				// Start the previewer.
+				const previewComponent = new PreviewComponent();
 
-async function drawHandPredictionsToCanvasElement(
-	video: HTMLVideoElement,
-	canvas: HTMLCanvasElement,
-	model: handpose.HandPose,
-): Promise<void> {
-	const contextOrNull: CanvasRenderingContext2D | null = canvas.getContext('2d');
-	if (!contextOrNull) {
-		throw new Error('`canvas.getContext()` returned `null`');
-	}
-	const context: CanvasRenderingContext2D = contextOrNull;
+				const mediaStream: MediaStream = await navigator.mediaDevices.getUserMedia({
+					audio: false,
+					video: { facingMode: 'user' },
+				});
+				await previewComponent.startStreamingWebcam(mediaStream);
 
-	async function drawFrame(): Promise<void> {
-		const predictions = await model.estimateHands(video);
-
-		context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
-		drawHandPredictions(context, predictions);
-
-		requestAnimationFrame(drawFrame);
-	}
-	drawFrame();
-}
-
-window.addEventListener('load', async () => {
-	try {
-		const model: handpose.HandPose = await handpose.load();
-
-		const loading: HTMLParagraphElement = selectElementOrThrow('#preview p');
-		const video: HTMLVideoElement = selectElementOrThrow('#preview video');
-		const canvas: HTMLCanvasElement = selectElementOrThrow('#preview canvas');
-
-		loading.style.display = 'none';
-		video.style.display = 'unset';
-		canvas.style.display = 'unset';
-
-		const [width, height] = await streamCameraToVideoElement(video);
-		canvas.width = width;
-		canvas.height = height;
-
-		drawHandPredictionsToCanvasElement(video, canvas, model);
-	} catch (error) {
-		console.error(error);
-	}
-});
+				const handpose: HandPose = await handposePromise;
+				previewComponent.startDrawingHandposeOverlays(handpose);
+			} finally {
+				loadingComponent.doneLoading();
+			}
+		} catch (error) {
+			console.error(error);
+			throw error;
+		}
+	},
+);

@@ -18,6 +18,15 @@ const config: Configuration = {
 	module: {
 		rules: [
 			{
+				test: /\.wasm$/i,
+				type: 'javascript/auto',
+				use: [
+					{
+						loader: 'file-loader',
+					},
+				],
+			},
+			{
 				exclude: /node_modules/,
 				test: /\.tsx?$/,
 				use: 'ts-loader',
