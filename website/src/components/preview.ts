@@ -1,6 +1,6 @@
 import { drawHandPrediction } from '@lib/drawing';
 import { HandPose, Prediction } from '@tensorflow-models/handpose';
-import { getBackend, ready as tensorFlowReady, setBackend } from '@tensorflow/tfjs-core';
+import { getBackend, ready, setBackend } from '@tensorflow/tfjs-core';
 import Chart from 'chart.js';
 import { PerSecondMetrics } from '../per-second-metrics';
 import { backendInfos, BackendName } from '../tensorflow-backends';
@@ -16,7 +16,7 @@ export class PreviewComponent {
 
 	public startDrawingHandposeOverlays(handpose: HandPose): void {
 		const drawFrame = async (): Promise<void> => {
-			await tensorFlowReady();
+			await ready();
 			const predictions: Prediction[] = await handpose.estimateHands(this._elements.video);
 
 			this._elements.handposeOverlayCanvas.width = this._elements.video.clientWidth;
